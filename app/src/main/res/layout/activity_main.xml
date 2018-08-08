@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_exit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="exit" />
+
+
+        <Button
+            android:id="@+id/btn_c_exist1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="存在吗" />
+
+        <Button
+            android:id="@+id/btn_c_repleace_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="repleacevalue" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_exit1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="exit(about)" />
+
+        <Button
+            android:id="@+id/btn_exit2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="exit2(_Exit)" />
+
+
+        <Button
+            android:id="@+id/btn_exit3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="exit3(atexit)" />
+
+
+
+
+    </LinearLayout>
+
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/sample_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="调用1" />
+
+        <Button
+            android:id="@+id/tv_create_obj"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="createObj" />
+
+        <Button
+            android:id="@+id/btn_print_stack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="打印堆栈" />
+
+    </LinearLayout>
+
+
+</LinearLayout>
