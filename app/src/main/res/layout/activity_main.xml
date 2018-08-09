@@ -34,7 +34,65 @@
             android:layout_height="wrap_content"
             android:text="repleacevalue" />
 
+
+
     </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_throwerror"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="throwError" />
+
+
+        <Button
+            android:id="@+id/btn_jvm_ver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="jvmver" />
+
+        <Button
+            android:id="@+id/btn_test_moni_exit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="MontinerExit" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_toast"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="toast" />
+
+
+        <Button
+            android:id="@+id/btn_package"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="package" />
+
+
+
+    </LinearLayout>
+
 
 
     <LinearLayout
@@ -70,6 +128,26 @@
     </LinearLayout>
 
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_execute_c"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text="exe c" />
+
+
+
+
+
+
+    </LinearLayout>
+
+
 
 
     <LinearLayout
@@ -96,6 +174,25 @@
             android:layout_height="wrap_content"
 
             android:text="打印堆栈" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/ev_path"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btn_check_file"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="检查文件" />
+
 
     </LinearLayout>
 
