@@ -1,7 +1,12 @@
 #include <jni.h>
-#include <string>
+#include <sys/syscall.h>
 
+#include <string>
+#include <sys/types.h>
+#include <unistd.h>
 #include <android/log.h>
+//#include <sys/_system_properties.h>
+#include <sys/system_properties.h>
 
 #define LOG_TAG "TEST_JNI"
 
@@ -343,7 +348,7 @@ Java_cn_qssq666_testjni_MainActivity_getApplicationPackage(JNIEnv *env, jobject 
     }
 
     jstring packageName = static_cast<jstring>(env->CallStaticObjectMethod(jclassActivityThead,
-                currentApplicationId));
+            currentApplicationId));
     if (env->ExceptionCheck()) {
         LOGE("call fail");
         env->ExceptionClear();
@@ -354,4 +359,105 @@ Java_cn_qssq666_testjni_MainActivity_getApplicationPackage(JNIEnv *env, jobject 
 
 
     return packageName;
+}extern "C" JNIEXPORT jstring JNICALL
+Java_cn_qssq666_testjni_MainActivity_readConfig(JNIEnv *env, jobject instance, jstring key_) {
+    const char *key = env->GetStringUTFChars(key_, 0);
+
+
+    char buf[PROP_VALUE_MAX];
+//    __system_property_get("net.dns1", buf);
+//    __system_property_get("net.dns2", buf);
+    __system_property_get(key, buf);
+//    __system_property_get("ro.secure", buf);
+//    __system_property_get("ro.debuggable", buf);
+
+    LOGW("read value:%s", buf);
+
+
+    env->ReleaseStringUTFChars(key_, key);
+
+    /*
+     *
+     * https://blog.csdn.net/pathfinder163/article/details/8807405
+     * 中加载默认属性：
+/ default.prop
+/system/build.prop
+/system/default.prop
+/data/local.prop
+     */
+    return env->NewStringUTF(buf);
+}extern "C" JNIEXPORT jint JNICALL
+Java_cn_qssq666_testjni_MainActivity_writeConfig(JNIEnv *env, jobject instance, jstring key_,
+                                                 jstring value_) {
+    const char *key = env->GetStringUTFChars(key_, 0);
+    const char *value = env->GetStringUTFChars(value_, 0);
+
+    char buf[PROP_VALUE_MAX];
+    int result = __system_property_set(key, value);
+
+    if (env->ExceptionCheck()) {
+        jclass excepClass = env->FindClass("java/lang/Exception");
+        env->ExceptionClear();
+        env->ThrowNew(excepClass, "设置失败!");
+
+    }
+
+    env->ReleaseStringUTFChars(key_, key);
+    env->ReleaseStringUTFChars(value_, value);
+    return result;
+}extern "C" JNIEXPORT jstring JNICALL
+Java_cn_qssq666_testjni_MainActivity_printStr(JNIEnv *env, jobject instance) {
+    /*
+     * strncmp
+     * str1 -- 要进行比较的第一个字符串。
+str2 -- 要进行比较的第二个字符串。
+n -- 要比较的最大字符数。
+     */
+    pid_t pid = syscall(__NR_getpid);
+//    int pid=getpid();
+    char line[128];
+    char filename[128];
+    sprintf(filename, "/proc/%d/status", pid);
+    LOGW("READ FILE %s", filename);
+    FILE *fd = fopen(filename, "r");
+    if (fd == NULL) {
+
+        char returnStr[128];
+        sprintf(returnStr, "cannot read file %s", filename);
+        return env->NewStringUTF(returnStr);
+    }
+    while (fgets(line, 128, fd)) {
+        if (strncmp(line, "TracerPid", 9) == 0) {//found
+            int status = atoi(&line[10]);
+            LOGI("########## found TracerPid status = %d, %s", status, line);
+            fclose(fd);
+            //pid_t pid = syscall(__NR_getpid);
+            syscall(__NR_close, fd);
+            if (status != 0) {
+                LOGI("########## FBI WARNING ##########");
+                LOGI("######### FIND DEBUGGER #########");
+                kill(pid, SIGKILL);
+//                syscall(__NR_kill, pid); //可以杀死系统
+//                syscall(CLD_KILLED);
+//                syscall(__NR_kill, SYS_kill);
+//                syscall(__NR_tkill);
+            }
+            break;
+        }
+
+    }
+   /* {
+        tprintf("%ld, %s",
+                widen_to_long(tcp->u_arg[0]),
+                signame(tcp->u_arg[1]));
+
+    }*/
+//    tgkill(pid,-1,0);
+//    syscall(__NR_tgkill);
+//    syscall(__NR_kill);
+//    syscall(__NR_kill, pid); //可以杀死系统
+
+//    cat /proc/pid/status
+
+    return env->NewStringUTF("HELLO WORLD");
 }

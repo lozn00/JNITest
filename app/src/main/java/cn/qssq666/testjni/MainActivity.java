@@ -1,12 +1,21 @@
 package cn.qssq666.testjni;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import cn.qssq666.testjni.aaa.InfoXXX;
 
 public class MainActivity extends Activity {
 
@@ -14,6 +23,10 @@ public class MainActivity extends Activity {
     static {
         System.loadLibrary("mylib");
     }
+
+    private EditText evPath;
+    private EditText evKey;
+    private EditText evValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,15 +154,17 @@ public class MainActivity extends Activity {
                 Toast.makeText(MainActivity.this, "jvm version:" + jvmVersion, Toast.LENGTH_SHORT).show();
             }
         });
-        final EditText evPath = (EditText) findViewById(R.id.ev_path);
+        evPath = (EditText) findViewById(R.id.ev_path);
+        evKey = (EditText) findViewById(R.id.ev_key);
+        evValue = (EditText) findViewById(R.id.ev_value);
 
         findViewById(R.id.btn_check_file).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 String path = evPath.getText().toString();
-                if(TextUtils.isEmpty(path)){
-                    path="/data/local/tmp/frida-server";
+                if (TextUtils.isEmpty(path)) {
+                    path = "/data/local/tmp/frida-server";
                 }
                 boolean exist = checkFileExist(path);
                 Toast.makeText(MainActivity.this, "file is exist?" + exist, Toast.LENGTH_SHORT).show();
@@ -160,7 +175,7 @@ public class MainActivity extends Activity {
         findViewById(R.id.btn_test_moni_exit).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                        moni_exit();
+                moni_exit();
             }
         });
 
@@ -168,6 +183,7 @@ public class MainActivity extends Activity {
         findViewById(R.id.btn_toast).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                MainActivity.this.sendBroadcast(new Intent("HELLO"));
                 showToast();
             }
         });
@@ -175,11 +191,102 @@ public class MainActivity extends Activity {
         findViewById(R.id.btn_package).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this,"apppackage:"+getApplicationPackage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "apppackage:" + getApplicationPackage(), Toast.LENGTH_SHORT).show();
             }
         });
+        findViewById(R.id.btn_read_config).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String s = readConfig(evKey.getText().toString());
+
+                Toast.makeText(MainActivity.this, "value:" + s, Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        findViewById(R.id.btn_write_config).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                int code = 0;
+                try {
+                    code = writeConfig(evKey.getText().toString(), evValue.getText().toString());
+                    Toast.makeText(MainActivity.this, "set code result:" + code, Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(MainActivity.this, "set code fail:" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+
+
+            }
+        });
+        findViewById(R.id.btn_print_c_str).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                Toast.makeText(MainActivity.this, "c:" + printStr(), Toast.LENGTH_SHORT).show();
+
+
+            }
+        });
+//        nable to add window -- token null is not for an application
+
+
+//        testDialog();
     }
 
+    private void testDialog() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            String[] arrs = new String[]{Manifest.permission.SYSTEM_ALERT_WINDOW};
+            this.requestPermissions(arrs, 1);
+            askForPermission();
+        }
+        final Dialog dialog = new Dialog(getApplicationContext(), R.style.dialog_full_x);
+        dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+        InfoXXX xxx=new InfoXXX(1,1);
+        xxx.getAge();
+//        dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_DIALOG);// permission denied for window type 2008
+        dialog.setContentView(R.layout.dialog_test);
+/*
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+
+
+            @Override
+            public void run() {
+
+                dialog.hide();
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                dialog.show();
+                handler.postDelayed(this, 1800);
+            }
+        }, 2000);*/
+
+        this.sendBroadcast(new Intent("HELLO"));
+    }
+
+
+    /**
+     * 请求用户给予悬浮窗的权限
+     */
+    public void askForPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this)) {
+                Toast.makeText(this, "当前无权限，请授权！", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, 1);
+            } else {
+            }
+        }
+    }
 
     int value = 30;
 
@@ -215,12 +322,20 @@ public class MainActivity extends Activity {
 
 
     public native int execute_c();
+
     public native void moni_exit();
 
     public native boolean checkFileExist(String path);
 
 
-    public native  void showToast();
-    public native  String getApplicationPackage();
+    public native void showToast();
+
+    public native String readConfig(String key);
+
+    public native int writeConfig(String key, String value) throws Exception;
+
+    public native String getApplicationPackage();
+
+    public native String printStr();
 
 }

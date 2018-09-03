@@ -14,7 +14,8 @@ add_library( # Sets the name of the library.
 
 find_library(
               log-lib
+             libcutil
               log )
 
-
-target_link_libraries(     mylib  ${log-lib} )
+#https://blog.csdn.net/ameyume/article/details/8056492
+target_link_libraries(     mylib  ${log-lib} ${libcutil})
